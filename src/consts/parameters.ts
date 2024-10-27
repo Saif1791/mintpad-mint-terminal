@@ -1,5 +1,4 @@
 import { createThirdwebClient, getContract } from "thirdweb";
-import { ethereum } from "thirdweb/chains";
 
 /** Change these values to configure the application for your own use. **/
 
@@ -7,12 +6,24 @@ export const client = createThirdwebClient({
   clientId: import.meta.env.VITE_TEMPLATE_CLIENT_ID,
 });
 
+// Define ApechainMainnet inline with all required properties
+const ApechainMainnet = {
+  id: 33139, // Replace with the actual chain ID
+  name: "Apechain Mainnet",
+  rpc: "https://apechain.calderachain.xyz/http", // Replace with the actual RPC URL
+  nativeCurrency: {
+    name: "APE",
+    symbol: "APE",
+    decimals: 18,
+  },
+  blockExplorer: "https://explorer.apechain.io", // Replace with the actual block explorer URL
+};
+
 export const nftContract = getContract({
   // Your smart contract address (available on the thirdweb dashboard)
-  address: "0xed5af388653567af2f388e6224dc7c4b3241c544",
+  address: "0x4844d135A2C1A6c1c4FAc870F0859118641EFdB4",
   // The chain object of the chain your contract is deployed to.
-  // If that chain isn't in the default list of our SDK, use `defineChain` - for example: defineChain(666666)
-  chain: ethereum,
+  chain: ApechainMainnet, // Now properly defined
   client,
 });
 

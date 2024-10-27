@@ -24,17 +24,9 @@ export const Header: React.FC = () => {
             </>
           ) : (
             <>
-              <img
-                className="h-10 w-10 rounded-full object-contain"
-                src={contractMetadata?.image || firstNFT?.metadata.image || ""}
-                alt={
-                  String(contractMetadata?.name) ||
-                  String(firstNFT?.metadata.name) ||
-                  ""
-                }
-              />
+             
               <p className="text-2xl font-bold text-white">
-                {contractMetadata?.name || firstNFT?.metadata.name}{" "}
+             <p>MintPad Mint Terminal</p>
               </p>
             </>
           )}
@@ -42,7 +34,7 @@ export const Header: React.FC = () => {
       </Link>
 
       <div className="max-w-xs">
-        <ConnectButton client={client} theme="dark" />
+       
       </div>
     </header>
   );

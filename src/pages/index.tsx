@@ -1,135 +1,137 @@
 import { Footer } from "@/components/Nav/Footer";
 import { Header } from "@/components/Nav/Header";
 import { NFTCard } from "@/components/NFTCard";
-import { nftContract } from "@/consts/parameters";
+import { createThirdwebClient, getContract } from "thirdweb";
 import useDebounce from "@/hooks/useDebounce";
-import { SearchIcon } from "@/icons/SearchIcon";
 import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet";
 import { NFT } from "thirdweb";
-import { getContractMetadata } from "thirdweb/extensions/common";
-import { getNFT, getNFTs, totalSupply } from "thirdweb/extensions/erc721";
-import { useReadContract } from "thirdweb/react";
+import { getNFT } from "thirdweb/extensions/erc721";
+import { ApechainMainnet } from "../consts/helper"; // Custom chain definition
+
+// Create a thirdweb client
+export const client = createThirdwebClient({
+  clientId: import.meta.env.VITE_TEMPLATE_CLIENT_ID,
+});
 
 function App() {
-  const nftsPerPage = 30;
-  const [page, setPage] = useState(1);
   const [search, setSearch] = useState<string>("");
+  const [nftContractAddresses, setNftContractAddresses] = useState([
+    "0x4844d135A2C1A6c1c4FAc870F0859118641EFdB4", // Default address
+    "0x3f09FC57194809e5a02fACc90dD7021a51819C0D", // New address 1
+    "0x2aaab9c978fc1d5c2c452c867e812db3be076626", // New address 2
+    "0x7262718ca3734a48c3be93521e8695630f1a45cd", // New address 3
+  ]);
+  
   const debouncedSearchTerm = useDebounce(search, 500);
-  const { data: nfts, isLoading } = useReadContract(getNFTs, {
-    contract: nftContract,
-    count: nftsPerPage,
-    start: (page - 1) * nftsPerPage,
-  });
-  const { data: totalCount } = useReadContract(totalSupply, {
-    contract: nftContract,
-  });
-  const { data: contractMetadata, isLoading: contractLoading } =
-    useReadContract(getContractMetadata, {
-      contract: nftContract,
-    });
-  const [nft, setNft] = useState<NFT | null>(null);
+  const [nfts, setNfts] = useState<NFT[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  const fetchNFT = async () => {
-    const nft = await getNFT({
-      contract: nftContract,
-      tokenId: BigInt(debouncedSearchTerm),
-    });
-    setNft(nft!);
-    setIsSearching(false);
+  // Fetch NFT from a specific contract address
+  const fetchNFT = async (nftContractAddress: string) => {
+    if (debouncedSearchTerm) {
+      const nftContract = getContract({
+        address: nftContractAddress,
+        chain: ApechainMainnet,
+        client,
+      });
+
+      const nft = await getNFT({
+        contract: nftContract,
+        tokenId: BigInt(debouncedSearchTerm),
+      });
+
+      return nft;
+    }
+    return null;
+  };
+
+  const fetchNFTs = async () => {
+    setIsSearching(true);
+    try {
+      const fetchedNFTs = await Promise.all(
+        nftContractAddresses.map(async (address) => {
+          const nft = await fetchNFT(address);
+          return nft;
+        })
+      );
+      setNfts(fetchedNFTs.filter((nft): nft is NFT => nft !== null)); // Type guard to ensure NFT type
+    } catch (error) {
+      console.error("Error fetching NFTs:", error);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   useEffect(() => {
     if (debouncedSearchTerm) {
-      setIsSearching(true);
-      fetchNFT();
+      fetchNFTs();
     } else {
-      setNft(null);
+      setNfts([]);
     }
-  }, [debouncedSearchTerm]);
+  }, [debouncedSearchTerm, nftContractAddresses]);
+
+  // Fetch NFTs with token ID 0 on component mount for all contracts
+  useEffect(() => {
+    const fetchTokenZeroNFTs = async () => {
+      const zeroNFTs = await Promise.all(
+        nftContractAddresses.map(async (address) => {
+          const nftContract = getContract({
+            address,
+            chain: ApechainMainnet,
+            client,
+          });
+
+          const nftZero = await getNFT({
+            contract: nftContract,
+            tokenId: BigInt(0),
+          });
+          return nftZero;
+        })
+      );
+      setNfts(zeroNFTs.filter((nft): nft is NFT => nft !== null)); // Type guard to ensure NFT type
+    };
+
+    fetchTokenZeroNFTs();
+  }, [nftContractAddresses]);
+
+  // Handle NFT click and redirect to Magic Eden
+  const handleNFTClick = (address: string) => {
+    window.open(`https://magiceden.io/collections/apechain/${address}`, '_blank'); // Open in new tab
+  };
 
   return (
     <div className="m-0 bg-[#0A0A0A] p-0 font-inter text-neutral-200">
       <Header />
 
-      <Helmet>
-        <title>{contractMetadata?.name}</title>
-      </Helmet>
-
       <div className="z-20 mx-auto flex min-h-screen w-full flex-col px-4">
-        {contractMetadata ? (
-          <div className="mb-8 text-center">
-            <h1 className="text-4xl font-bold text-white">
-              {contractMetadata.name}
-            </h1>
-            <h2 className="text-xl font-bold text-white">
-              {contractMetadata.description}
-            </h2>
-          </div>
-        ) : contractLoading ? (
-          <div className="mx-auto mb-8 text-center">
-            <div className="mx-auto h-8 w-96 animate-pulse rounded-lg bg-gray-800" />
-            <div className="mx-auto mt-4 h-8 w-96 animate-pulse rounded-lg bg-gray-800" />
-          </div>
-        ) : null}
+        <h1 className="text-4xl font-bold text-white text-center mb-4">
+          Mintpad Mint Terminal
+        </h1>
 
-        <div className="mx-auto mb-8 flex h-12 w-96 max-w-full items-center rounded-lg border border-white/10 bg-white/5 px-4 text-xl text-white">
-          <SearchIcon />
-          <input
-            type="number"
-            onChange={(e) => {
-              if (
-                e.target.value.match(/^[0-9]*$/) &&
-                Number(e.target.value) > 0
-              ) {
-                setSearch(e.target.value);
-              } else {
-                setSearch("");
-              }
-            }}
-            placeholder="Search by Token ID"
-            className="w-full bg-transparent px-4 text-white focus:outline-none"
-          />
-        </div>
-
-        {isSearching ? (
+        {isSearching && (
           <div className="mx-auto !h-60 !w-60 animate-pulse rounded-lg bg-gray-800" />
-        ) : null}
+        )}
 
-        {search && nft && !isSearching ? (
-          <NFTCard nft={nft} key={nft.id.toString()} />
-        ) : null}
-
-        {isLoading && (
-          <div className="mx-auto flex flex-wrap items-center justify-center gap-8">
-            {Array.from({ length: nftsPerPage }).map((_, i) => (
-              <div
-                className="!h-60 !w-60 animate-pulse rounded-lg bg-gray-800"
-                key={i}
+        {/* Display NFTs in a horizontal layout */}
+        <div className="flex flex-wrap space-x-4">
+          {nfts.map((nft, index) => (
+            <div key={nft.id.toString()} className="cursor-pointer">
+              <NFTCard 
+                nft={nft} 
+                onClick={() => handleNFTClick(nftContractAddresses[index])} // Attach click handler
               />
-            ))}
-          </div>
-        )}
-
-        {nfts && !search && (
-          <div className="flex flex-wrap items-center justify-center gap-8">
-            {nfts.map((nft) => (
-              <NFTCard nft={nft} key={nft.id.toString()} />
-            ))}
-          </div>
-        )}
-
-        {!search && (
-          <Footer
-            page={page}
-            setPage={setPage}
-            nftsPerPage={nftsPerPage}
-            totalCount={totalCount ? Number(totalCount) : undefined}
-            loading={isLoading}
-          />
-        )}
+            </div>
+          ))}
+        </div>
       </div>
+
+      <Footer
+        page={0}
+        setPage={() => {}} // Placeholder function
+        nftsPerPage={0}
+        totalCount={undefined}
+        loading={false}
+      />
     </div>
   );
 }
