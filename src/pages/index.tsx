@@ -6,7 +6,7 @@ import useDebounce from "@/hooks/useDebounce";
 import { useEffect, useState } from "react";
 import { NFT } from "thirdweb";
 import { getNFT } from "thirdweb/extensions/erc721";
-import { ApechainMainnet } from "../consts/helper"; // Assuming this is your custom chain definition
+import { ApechainMainnet } from "../consts/helper"; // Your custom chain definition
 
 // Create a thirdweb client
 export const client = createThirdwebClient({
@@ -30,7 +30,7 @@ function App() {
     if (debouncedSearchTerm) {
       const nftContract = getContract({
         address: nftContractAddress,
-        chain: ApechainMainnet,
+        chain: ApechainMainnet, // Keep using the ApechainMainnet object
         client,
       });
 
@@ -71,7 +71,7 @@ function App() {
         nftContractAddresses.map(async (address) => {
           const nftContract = getContract({
             address,
-            chain: ApechainMainnet,
+            chain: ApechainMainnet, // Keep using the ApechainMainnet object
             client,
           });
 
@@ -101,7 +101,6 @@ function App() {
         <h1 className="text-4xl font-bold text-white text-center mb-4">
           Mintpad Mint Terminal
         </h1>
-
 
         {isSearching ? (
           <div className="mx-auto !h-60 !w-60 animate-pulse rounded-lg bg-gray-800" />
@@ -134,6 +133,4 @@ function App() {
   );
 }
 
-
 export default App;
-
