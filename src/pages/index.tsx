@@ -6,7 +6,7 @@ import useDebounce from "@/hooks/useDebounce";
 import { useEffect, useState } from "react";
 import { NFT } from "thirdweb";
 import { getNFT } from "thirdweb/extensions/erc721";
-import { ApechainMainnet } from "../consts/helper"; // Custom chain definition
+import { ApechainMainnet } from "../consts/helper"; // Assuming this is your custom chain definition
 
 // Create a thirdweb client
 export const client = createThirdwebClient({
@@ -19,9 +19,8 @@ function App() {
     "0x4844d135A2C1A6c1c4FAc870F0859118641EFdB4", // Default address
     "0x3f09FC57194809e5a02fACc90dD7021a51819C0D", // New address 1
     "0x2aaab9c978fc1d5c2c452c867e812db3be076626", // New address 2
-    "0x7262718ca3734a48c3be93521e8695630f1a45cd", // New address 3
+    "0x7262718ca3734a48c3be93521e8695630f1a45cd" // New address 3
   ]);
-  
   const debouncedSearchTerm = useDebounce(search, 500);
   const [nfts, setNfts] = useState<NFT[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -39,7 +38,7 @@ function App() {
         contract: nftContract,
         tokenId: BigInt(debouncedSearchTerm),
       });
-
+      
       return nft;
     }
     return null;
@@ -47,19 +46,14 @@ function App() {
 
   const fetchNFTs = async () => {
     setIsSearching(true);
-    try {
-      const fetchedNFTs = await Promise.all(
-        nftContractAddresses.map(async (address) => {
-          const nft = await fetchNFT(address);
-          return nft;
-        })
-      );
-      setNfts(fetchedNFTs.filter((nft): nft is NFT => nft !== null)); // Type guard to ensure NFT type
-    } catch (error) {
-      console.error("Error fetching NFTs:", error);
-    } finally {
-      setIsSearching(false);
-    }
+    const fetchedNFTs = await Promise.all(
+      nftContractAddresses.map(async (address) => {
+        const nft = await fetchNFT(address);
+        return nft;
+      })
+    );
+    setNfts(fetchedNFTs.filter((nft) => nft !== null));
+    setIsSearching(false);
   };
 
   useEffect(() => {
@@ -88,7 +82,7 @@ function App() {
           return nftZero;
         })
       );
-      setNfts(zeroNFTs.filter((nft): nft is NFT => nft !== null)); // Type guard to ensure NFT type
+      setNfts(zeroNFTs.filter((nft) => nft !== null));
     };
 
     fetchTokenZeroNFTs();
@@ -108,14 +102,16 @@ function App() {
           Mintpad Mint Terminal
         </h1>
 
-        {isSearching && (
+
+        {isSearching ? (
           <div className="mx-auto !h-60 !w-60 animate-pulse rounded-lg bg-gray-800" />
-        )}
+        ) : null}
 
         {/* Display NFTs in a horizontal layout */}
         <div className="flex flex-wrap space-x-4">
           {nfts.map((nft, index) => (
             <div key={nft.id.toString()} className="cursor-pointer">
+              {/* Pass the contract address to the NFTCard's onClick */}
               <NFTCard 
                 nft={nft} 
                 onClick={() => handleNFTClick(nftContractAddresses[index])} // Attach click handler
@@ -127,7 +123,9 @@ function App() {
 
       <Footer
         page={0}
-        setPage={() => {}} // Placeholder function
+        setPage={function (page: number): void {
+          throw new Error("Function not implemented.");
+        }}
         nftsPerPage={0}
         totalCount={undefined}
         loading={false}
@@ -136,4 +134,6 @@ function App() {
   );
 }
 
+
 export default App;
+

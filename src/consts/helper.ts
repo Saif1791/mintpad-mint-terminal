@@ -17,12 +17,13 @@ interface Explorer {
     standard: string;
 }
 
-interface ApechainMainnet {
+interface Chain {
+    id: number; // Ensure id is defined in the Chain interface
     name: string;
     chain: string;
     status: string;
     icon: Icon;
-    rpc: string[];
+    rpc: string; // Change this to string
     ws: string[];
     faucets: string[];
     nativeCurrency: NativeCurrency;
@@ -35,7 +36,9 @@ interface ApechainMainnet {
     slug: string;
 }
 
-export const ApechainMainnet: ApechainMainnet = {
+// Define the ApechainMainnet constant with the correct type
+export const ApechainMainnet: Chain = {
+    id: 33139, // Add this line
     name: "ApeChain Mainnet",
     chain: "APE",
     status: "active",
@@ -45,9 +48,7 @@ export const ApechainMainnet: ApechainMainnet = {
         height: 100,
         format: "png"
     },
-    rpc: [
-        "https://apechain.calderachain.xyz/http"
-    ],
+    rpc: "https://apechain.calderachain.xyz/http", // Change this to a single string
     ws: [
         "wss://apechain.calderachain.xyz/ws"
     ],
