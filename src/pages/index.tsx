@@ -114,13 +114,13 @@ function App() {
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-6">
-          <h1 className="text-5xl font-extrabold text-purple-400">Mint Terminal</h1>
+          <h1 className="text-5xl font-extrabold text-blue-400">Mint Terminal</h1>
           <p className="text-gray-400 mt-2">Live ApeChain NFT Mints</p>
         </div>
 
         {isSearching ? (
           <div className="flex justify-center my-8">
-            <div className="h-20 w-20 rounded-full border-4 border-purple-600 border-t-transparent animate-spin"></div>
+            <div className="h-20 w-20 rounded-full border-4 border-blue-600 border-t-transparent animate-spin"></div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -130,7 +130,7 @@ function App() {
                 onClick={() => handleNFTClick(nftCollections[index].permalink)}
                 className="relative cursor-pointer transition-transform duration-300 transform hover:scale-105"
               >
-                <div className="p-1 rounded-lg bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 shadow-md">
+                <div className="p-1 rounded-lg bg-gradient-to-r from-blue-500 via-pink-500 to-blue-500 shadow-md">
                   <div className="bg-gray-900 rounded-lg p-4">
                     <NFTCard
                       nft={nft}
