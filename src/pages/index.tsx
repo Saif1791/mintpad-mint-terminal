@@ -13,7 +13,6 @@ export const client = createThirdwebClient({
   clientId: import.meta.env.VITE_TEMPLATE_CLIENT_ID,
 });
 
-// Define a type for NFT collection
 type NftCollection = {
   name: string;
   permalink: string;
@@ -27,7 +26,6 @@ function App() {
   const [nfts, setNfts] = useState<NFT[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Step 1: Fetch NFT collections from API
   const fetchNftCollections = async () => {
     try {
       const response = await fetch("https://app.mintpad.co/getdatacollection");
@@ -38,19 +36,17 @@ function App() {
         address: item.address,
       }));
       setNftCollections(collections);
-      console.log("Fetched collections:", collections); // Confirm collections
     } catch (error) {
       console.error("Error fetching NFT collections:", error);
     }
   };
 
   useEffect(() => {
-    fetchNftCollections(); // Fetch collections on component mount
+    fetchNftCollections();
   }, []);
 
-  // Step 2: Fetch NFTs from each contract based on search term
   const fetchNFT = async (nftContractAddress: string) => {
-    if (!debouncedSearchTerm) return null; // Skip if no search term
+    if (!debouncedSearchTerm) return null;
     try {
       const nftContract = getContract({
         address: nftContractAddress,
@@ -88,7 +84,6 @@ function App() {
     }
   }, [debouncedSearchTerm, nftCollections]);
 
-  // Step 3: Fetch NFTs with Token ID 0 on component mount for all contracts
   useEffect(() => {
     const fetchTokenZeroNFTs = async () => {
       const zeroNFTs = await Promise.all(
@@ -106,56 +101,53 @@ function App() {
         })
       );
       setNfts(zeroNFTs.filter((nft) => nft !== null) as NFT[]);
-      console.log("Fetched NFTs with Token ID 0:", zeroNFTs);
     };
-
     fetchTokenZeroNFTs();
   }, [nftCollections]);
 
-  // Handle NFT click and redirect to Mintpad permalink
   const handleNFTClick = (permalink: string) => {
-    window.open(`https://on.mintpad.co/${permalink}`, "_blank"); // Open in new tab
+    window.open(`https://on.mintpad.co/${permalink}`, "_blank");
   };
 
   return (
-    <div className="m-0 bg-[#0A0A0A] p-0 font-inter text-neutral-200">
+    <div className="bg-gradient-to-b from-black to-gray-900 min-h-screen text-white font-inter">
       <Header />
-
-      <div className="z-20 mx-auto flex min-h-screen w-full flex-col px-4">
-
-        <div className="flex items-center justify-center mb-4">
-     
-        <h1 className="text-4xl font-bold text-blue ">Mint Terminal</h1>
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center mb-6">
+          <h1 className="text-5xl font-extrabold text-purple-400">Mint Terminal</h1>
+          <p className="text-gray-400 mt-2">Live ApeChain NFT Mints</p>
         </div>
-<br></br>
-        {isSearching && (
-          <div className="mx-auto !h-60 !w-60 animate-pulse rounded-lg bg-gray-800" />
+
+        {isSearching ? (
+          <div className="flex justify-center my-8">
+            <div className="h-20 w-20 rounded-full border-4 border-purple-600 border-t-transparent animate-spin"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {nfts.map((nft, index) => (
+              <div
+                key={nft.id.toString()}
+                onClick={() => handleNFTClick(nftCollections[index].permalink)}
+                className="relative cursor-pointer transition-transform duration-300 transform hover:scale-105"
+              >
+                <div className="p-1 rounded-lg bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 shadow-md">
+                  <div className="bg-gray-900 rounded-lg p-4">
+                    <NFTCard
+                      nft={nft}
+                      collectionName={nftCollections[index].name}
+                      imageSrc={nft.metadata.image || "https://example.com/placeholder.png"} onClick={function (): void {
+                        throw new Error("Function not implemented.");
+                      } }                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
-
-        {/* Display NFTs in a horizontal layout */}
-        <div className="flex flex-wrap space-x-4">
-          {nfts.map((nft, index) => (
-            <div key={nft.id.toString()} className="cursor-pointer">
-              <NFTCard
-                nft={nft}
-                onClick={() => handleNFTClick(nftCollections[index].permalink)} // Attach click handler
-                collectionName={nftCollections[index].name} // Pass collection name
-                imageSrc={nft.metadata.image || "https://pbs.twimg.com/media/Gag4bqOWEAE56-0.png"} // Use placeholder if no image
-              />
-            </div>
-          ))}
-        </div>
       </div>
-
-      <Footer
-        page={0}
-        setPage={(page: number): void => {
-          throw new Error("Function not implemented.");
-        }}
-        nftsPerPage={0}
-        totalCount={undefined}
-        loading={false}
-      />
+      <Footer page={0} setPage={function (page: number): void {
+        throw new Error("Function not implemented.");
+      } } nftsPerPage={0} totalCount={undefined} loading={false} />
     </div>
   );
 }
