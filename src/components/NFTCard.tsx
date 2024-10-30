@@ -6,9 +6,11 @@ import { MediaRenderer } from "thirdweb/react";
 interface INFTCardProps {
   nft: NFT;
   onClick: () => void; // Add onClick prop
+  collectionName: string; // Add collectionName prop
+  imageSrc: string; // Add imageSrc prop
 }
 
-export const NFTCard: FC<INFTCardProps> = ({ nft, onClick }) => {
+export const NFTCard: FC<INFTCardProps> = ({ nft, onClick, collectionName, imageSrc }) => {
   const [hover, setHover] = useState<boolean>(false);
 
   return (
@@ -18,16 +20,11 @@ export const NFTCard: FC<INFTCardProps> = ({ nft, onClick }) => {
       onMouseLeave={() => setHover(false)}
       onClick={onClick} // Attach the onClick handler
     >
-      <MediaRenderer client={client} src={nft.metadata.image} />
+      <MediaRenderer client={client} src={imageSrc} />
 
       {hover && (
         <div className="absolute flex h-36 w-36 flex-col items-center justify-center rounded-lg bg-black/50 backdrop-filter md:h-60 md:w-60">
-          <h1 className="text-2xl text-gray-200">
-            {String(nft.metadata.name).split(" ")[0]}
-          </h1>
-          <h1 className="text-2xl font-bold text-gray-200">
-            {String(nft.metadata.name).split(" ")[1]}
-          </h1>
+          <h1 className="text-2xl text-gray-200">{collectionName}</h1>
         </div>
       )}
     </div>
