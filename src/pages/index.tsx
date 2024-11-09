@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { NFT } from "thirdweb";
 import { getNFT } from "thirdweb/extensions/erc721";
 import { ApechainMainnet } from "../consts/helper"; // Your custom chain definition
+import MintTerminal from "@/components/MintTerminal";
 
 // Create a thirdweb client
 export const client = createThirdwebClient({
@@ -70,7 +71,7 @@ function App() {
       nftCollections.map(async (collection) => {
         const nft = await fetchNFT(collection.address);
         return nft;
-      })
+      }),
     );
     setNfts(fetchedNFTs.filter((nft) => nft !== null) as NFT[]);
     setIsSearching(false);
@@ -98,7 +99,7 @@ function App() {
             tokenId: BigInt(0),
           });
           return nftZero;
-        })
+        }),
       );
       setNfts(zeroNFTs.filter((nft) => nft !== null) as NFT[]);
     };
@@ -114,9 +115,12 @@ function App() {
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-6">
-          <h1 className="text-5xl font-extrabold text-blue-400">Mint Terminal</h1>
+          <h1 className="text-5xl font-extrabold text-blue-400">
+            Mint Terminal
+          </h1>
           <p className="text-gray-400 mt-2">Live ApeChain NFT Mints</p>
         </div>
+        <MintTerminal />
 
         {isSearching ? (
           <div className="flex justify-center my-8">
@@ -135,9 +139,14 @@ function App() {
                     <NFTCard
                       nft={nft}
                       collectionName={nftCollections[index].name}
-                      imageSrc={nft.metadata.image || "https://example.com/placeholder.png"} onClick={function (): void {
+                      imageSrc={
+                        nft.metadata.image ||
+                        "https://example.com/placeholder.png"
+                      }
+                      onClick={function (): void {
                         throw new Error("Function not implemented.");
-                      } }                    />
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -145,9 +154,15 @@ function App() {
           </div>
         )}
       </div>
-      <Footer page={0} setPage={function (page: number): void {
-        throw new Error("Function not implemented.");
-      } } nftsPerPage={0} totalCount={undefined} loading={false} />
+      <Footer
+        page={0}
+        setPage={function (page: number): void {
+          throw new Error("Function not implemented.");
+        }}
+        nftsPerPage={0}
+        totalCount={undefined}
+        loading={false}
+      />
     </div>
   );
 }
