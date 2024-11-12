@@ -10,7 +10,12 @@ interface INFTCardProps {
   imageSrc: string; // Add imageSrc prop
 }
 
-export const NFTCard: FC<INFTCardProps> = ({ nft, onClick, collectionName, imageSrc }) => {
+export const NFTCard: FC<INFTCardProps> = ({
+  nft,
+  onClick,
+  collectionName,
+  imageSrc,
+}) => {
   const [hover, setHover] = useState<boolean>(false);
 
   return (

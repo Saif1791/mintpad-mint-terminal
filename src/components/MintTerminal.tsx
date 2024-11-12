@@ -1,9 +1,11 @@
 import React from "react";
+import LiveFeed from "./LiveFeed/LiveFeed";
 
 const MintTerminal: React.FC = () => {
   return (
-    <div className="flex items-center justify-center">
-      <div className="w-96 p-4 bg-[#1a1a2e] rounded-lg text-white shadow-md">
+    <div className="flex flex-col items-center justify-center">
+      {/* card */}
+      <div className="w-96 p-4 mb-12 bg-[#1a1a2e] rounded-lg text-white shadow-md">
         <div className="flex justify-end gap-2">
           <p className="text-xs bg-red-600 py-1 px-2 rounded-full bg-opacity-40">
             ⚠️Almost Gone
@@ -18,7 +20,7 @@ const MintTerminal: React.FC = () => {
             alt="Ape Punk"
             className="w-24 h-24 rounded-md"
           />
-          <h2 className="text-normal">Ape Punk</h2>
+          <h2 className="text-normal ml-2">Ape Punk</h2>
         </div>
         <div className="mt-4 p-3 bg-[#2a2a40] rounded-lg">
           <div className="flex justify-between text-sm">
@@ -36,6 +38,7 @@ const MintTerminal: React.FC = () => {
         </div>
         <p className="mt-3 text-gray-500 text-sm">No Description</p>
       </div>
+      <LiveFeed />
     </div>
   );
 };
