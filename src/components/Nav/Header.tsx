@@ -24,24 +24,19 @@ export const Header: React.FC = () => {
             </>
           ) : (
             <>
-             
               <p className="text-2xl font-bold text-white">
-      
-             <img
-            src="https://mintpad.co/wp-content/uploads/2023/03/Logo-Mintpad-Grey.webp"
-            alt="Mintpad Logo"
-            className="h-10 mr-2" // Adjust height and margin as needed
-          />
-              
+                <img
+                  src="https://mintpad.co/wp-content/uploads/2023/03/Logo-Mintpad-Grey.webp"
+                  alt="Mintpad Logo"
+                  className="h-10 mr-2" // Adjust height and margin as needed
+                />
               </p>
             </>
           )}
         </div>
       </Link>
 
-      <div className="max-w-xs">
-       
-      </div>
+      <div className="max-w-xs"></div>
     </header>
   );
 };
